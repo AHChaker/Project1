@@ -53,3 +53,23 @@ def add_items():
     cursor.close()
     
     return jsonify({'message': 'Items added successfully!'}), 201
+
+
+@app.route('/api/currentinventory', methods=['GET'])
+def get_current_inventory():
+    connection = connect
+    cursor = connection.cursor(dictionary=True)
+    
+
+    cursor.execute("SELECT * FROM inventory")
+    items = cursor.fetchall()
+    
+
+    total_value = sum(item['quantity'] * item['price'] for item in items)
+    
+    cursor.close()
+    
+    return jsonify({
+        'inventory': items,
+        'total': total_value
+    }), 200
