@@ -25,3 +25,31 @@ connect = create_connection(
     'ZlatanIbra1',  
     'cisfall2368db'  
 )
+
+
+@app.route('/api/additems', methods=['POST'])
+def add_items():
+    data = request.get_json()  
+    
+    connection = connect
+    cursor = connection.cursor()
+
+
+    for item in data['items']:
+        name = item['name']
+        quantity = item['quantity']
+        price = item['price']
+        
+
+        cursor.execute("SELECT * FROM inventory WHERE name = %s", (name,))
+        existing_item = cursor.fetchone()
+        
+        if existing_item:
+            cursor.execute("UPDATE inventory SET quantity = quantity + %s WHERE name = %s", (quantity, name))
+        else:
+            cursor.execute("INSERT INTO inventory (name, quantity, price) VALUES (%s, %s, %s)", (name, quantity, price))
+    
+    connection.commit()  
+    cursor.close()
+    
+    return jsonify({'message': 'Items added successfully!'}), 201
