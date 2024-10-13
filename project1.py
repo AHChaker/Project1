@@ -73,3 +73,7 @@ def get_current_inventory():
         'inventory': items,
         'total': total_value
     }), 200
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
