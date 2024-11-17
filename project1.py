@@ -26,6 +26,46 @@ connect = create_connection(
     'cisfall2368db'  
 )
 
+@app.route('/api/investors', methods=['POST'])
+def create_investor():
+    data = request.get_json()
+    connection = connect
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO investor (firstname, lastname) VALUES (%s, %s)", 
+                   (data['firstname'], data['lastname']))
+    connection.commit()
+    cursor.close()
+    return jsonify({'message': 'Investor added successfully!'}), 201
+
+@app.route('/api/investors', methods=['GET'])
+def get_investors():
+    connection = connect
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM investor")
+    investors = cursor.fetchall()
+    cursor.close()
+    return jsonify(investors), 200
+
+@app.route('/api/investors/<int:id>', methods=['PUT'])
+def update_investor(id):
+    data = request.get_json()
+    connection = connect
+    cursor = connection.cursor()
+    cursor.execute("UPDATE investor SET firstname = %s, lastname = %s WHERE id = %s", 
+                   (data['firstname'], data['lastname'], id))
+    connection.commit()
+    cursor.close()
+    return jsonify({'message': 'Investor updated successfully!'}), 200
+
+@app.route('/api/investors/<int:id>', methods=['DELETE'])
+def delete_investor(id):
+    connection = connect
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM investor WHERE id = %s", (id,))
+    connection.commit()
+    cursor.close()
+    return jsonify({'message': 'Investor deleted successfully!'}), 200
+
 
 @app.route('/api/additems', methods=['POST'])
 def add_items():
